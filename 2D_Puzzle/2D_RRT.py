@@ -83,7 +83,7 @@ def plan_path(q_pWorld, q_start, q_goal, table_height, scenario, box_size):
         .setJoint(ry.JT.rigid) \
         .setContact(1) \
         .setMass(1.)
-    if withHold == True:
+    if hold == True:
         C.addFrame("hold", "box") \
             .setRelativePosition([0.0, 0.0, box_size[2]/2 + 0.025]) \
             .setShape(ry.ST.ssBox, size=[.04, .04, .05, .001]) \
@@ -93,7 +93,7 @@ def plan_path(q_pWorld, q_start, q_goal, table_height, scenario, box_size):
     C.view()
     return C, path
 
-def execute(C: ry.Config, path: list, grasp_height: float, withHold: bool):
+def execute(C: ry.Config, path: list, grasp_height: float, withHold: bool, onRobot: bool):
     man = expManip.ManipulationModelling(C)
     man.setup_inverse_kinematics()
     if withHold == True:
@@ -106,7 +106,7 @@ def execute(C: ry.Config, path: list, grasp_height: float, withHold: bool):
 
     if man.feasible:
         # move to box
-        robot = robex.Robot(C, False)   # True if real robot
+        robot = robex.Robot(C, onRobot)
         robot.execute_path_blocking(C, pose)
         robot.grasp(C)
         
@@ -134,8 +134,8 @@ if __name__ == "__main__":
     # ----- GLOBAL VARIABLES -----
 
     q_pWorld=[-0.3, 0.3, 0.0]
-    q_start=[0.10, .10, .0]
-    q_goal=[-0.14, .14, .0]
+    q_start=[0.12, .12, .0]
+    q_goal=[-0.16, .16, .0]
     
     # scenario, table_height = 'scenarios/pandaSingle.g', 0.65
     scenario, table_height = 'scenarios/pandasTable.g', 0.6
@@ -147,5 +147,4 @@ if __name__ == "__main__":
     # ----- START MAIN -----
 
     C, path = plan_path(q_pWorld, q_start, q_goal, table_height, scenario, box_size)
-    execute(C, path, 0.015, hold)
-    
+    execute(C, path, 0.015, hold, False)    # True if on real robot
