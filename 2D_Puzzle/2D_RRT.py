@@ -134,8 +134,8 @@ if __name__ == "__main__":
     # ----- GLOBAL VARIABLES -----
 
     q_pWorld=[-0.3, 0.3, 0.0]
-    q_start=[0.12, .12, .0]
-    q_goal=[-0.16, .16, .0]
+    q_start=[0.10, .10, .0]
+    q_goal=[-0.14, .14, .0]
     
     # scenario, table_height = 'scenarios/pandaSingle.g', 0.65
     scenario, table_height = 'scenarios/pandasTable.g', 0.6
