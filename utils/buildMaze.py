@@ -10,16 +10,14 @@ class PuzzleWorld:
 
     def build(self):
         # position is defined by center of object (distance between two holes on puzzle board is 4 cm)
-        cube1_pos = [-1.5*0.04, 1.5*0.04, 0.0085]
-        cube2_pos = [-4.5*0.04, 2.5*0.04, 0.0085]
-        cube3_pos = [3.5*0.04, -4.5*0.04, 0.0085]
-        
-        block1_pos = [-1.5*0.04, 4*0.04, 0.0085]
-        block2_pos = [1.5*0.04, 1*0.04, 0.0085]
-        block3_pos = [-4*0.04, -4.5*0.04, 0.0085]
-
-        longblock_pos = [2*0.04, -1.5*0.04, 0.0085]
-        corner_pos = [-2 * 0.04, -2.5 * 0.04, 0.0085] # position of center of horizontal 4x8 block
+        cube1_pos = [-4.5*0.04, 1.5*0.04, 0.0085]
+        cube2_pos = [-3.5*0.04, -2.5*0.04, 0.0085]
+        cube3_pos = [-0.5*0.04, -3.5*0.04, 0.0085]
+        block1_pos = ([-4.0*0.04, -3.5*0.04, 0.0085], "horizontal")
+        block2_pos = ([4.0*0.04, -1.5*0.04, 0.0085], "horizontal")
+        longblock_pos = ([-0.5*0.04, 3.0*0.04, 0.0085], "vertical")
+        longblock2_pos = ([-4.5*0.04, -1.0*0.04, 0.0085], "vertical")
+        corner_pos = [4.0*0.04, -4.5*0.04, 0.0085] # position of center of horizontal 4x8 block
         
         # # narrow passage
         # block1_pos = [-2.5*0.04, 4*0.04, 0.0085]
@@ -57,14 +55,14 @@ class PuzzleWorld:
         # add obstacles of maze
         self._add_border_boxes(border_pos, border_height, border_thickness)
 
-        # self._add_cube('cube1', cube1_pos)
-        # self._add_cube('cube2', cube2_pos)
+        self._add_cube('cube1', cube1_pos)
+        self._add_cube('cube2', cube2_pos)
         self._add_cube('cube3', cube3_pos)
-        self._add_block('block1', block1_pos, 'vertical')
-        self._add_block('block2', block2_pos, 'vertical')
-        self._add_block('block3', block3_pos, 'horizontal')
-        self._add_long_block('longBlock', longblock_pos, 'horizontal')
-        self._add_corner_block('cornerBlock', corner_pos, 'upper_left')
+        self._add_block('block1', block1_pos[0], block1_pos[1])
+        self._add_block('block2', block2_pos[0], block2_pos[1])
+        self._add_long_block('longBlock', longblock_pos[0], longblock_pos[1])
+        self._add_long_block('longBlock2', longblock2_pos[0], longblock2_pos[1])
+        self._add_corner_block('cornerBlock', corner_pos, 'lower_right')
         # self._add_goal(self.q_goal, 0.08)
         
         return self.C
@@ -155,8 +153,8 @@ class PuzzleWorld:
 
 # C = ry.Config()
 # q_pWorld = [0.0, 0.3, 0.65]
-# q_start = [0.12, .12, .0]
-# q_goal = [-0.16, .16, .0]
+# q_start = [0.10, .10, .0]
+# q_goal = [-0.14, .14, .0]
 # puzzle_world = PuzzleWorld(C, None, q_pWorld, q_start, q_goal)
 # puzzle_world.build()
 # C.view(True)
