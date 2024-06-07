@@ -117,7 +117,7 @@ def execute(C: ry.Config, path: list, grasp_height: float, withHold: bool, onRob
                
         # execute path
         try:
-            robot.execute_path_blocking(C, path_solution)
+            robot.execute_path_blocking(C, path_solution, time_to_solve=10)
         except:
             print("Path is not feasible!")
         
