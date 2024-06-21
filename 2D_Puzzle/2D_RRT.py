@@ -64,8 +64,8 @@ def initialize_config(q_pWorld, q_start, q_goal):
     return C
 
 
-def plan_path(q_pWorld, table_height, scenario, box_size, hold_size: list):
-    ry.params_add({'rrt/stepsize': .05})
+def plan_path(q_pWorld, table_height, scenario, stepsize, box_size, hold_size: list):
+    ry.params_add({'rrt/stepsize': stepsize})
     ret = solve_maze_rrt(C, True, 0.0) 
     if not ret.feasible:
         print("The RRT solver was unable to find a feasible path.")
@@ -129,7 +129,12 @@ def execute(C: ry.Config, path: list, grasp_height: float, withHold: bool, onRob
         man = expManip.ManipulationModelling(C)
         man.follow_path_on_plane(path, "z", "l_gripper")
         path_solution = man.solve()
-               
+
+        man_smooth = expManip.ManipulationModelling(C)
+        man_smooth.follow_path_on_plane(path, "z", "l_gripper", soft=True, initialization=path_solution)
+        path_solution = man_smooth.solve(verbose=1)
+        # print(man_smooth.komo.report(False, True))
+
         # execute path
         try:
             robot.execute_path_blocking(C, path_solution, time_to_solve=len(path_solution)*0.1)
@@ -156,6 +161,8 @@ if __name__ == "__main__":
     scenario, table_height = 'scenarios/pandasTable.g', 0.6
     # scenario, table_height = 'scenarios/pandaSingle.g', 0.65
 
+    rrt_stepsize = 0.05
+
     box_size = [.07, .075, .06, .001]
     hold_size = [.04, .04, .05, .001]
     grasp_height = 0.02
@@ -163,7 +170,11 @@ if __name__ == "__main__":
 
 
     # ----- START MAIN -----
+    
     C = initialize_config(q_pWorld, q_start, q_goal)
-    C, path = plan_path(q_pWorld, table_height, scenario, box_size, hold_size)
+    C, path = plan_path(q_pWorld, table_height, scenario, rrt_stepsize, box_size, hold_size)
+    f = open("config.g", "w")
+    print(C.write(), file=f)
+
     execute(C, path, grasp_height, hold, False)    # True if on real robot
     
