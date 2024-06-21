@@ -9,6 +9,7 @@ import utils.buildMaze as pWorld
 import utils.robot_execution as robex
 import utils.expanded_manipulation as expManip
 
+
 def solve_maze_rrt(C: ry.Config, visual: bool, distance: float) -> ry._robotic.SolverReturn:
     """
     Takes a ry.Config with just some obstacles and a start
@@ -54,20 +55,27 @@ def solve_maze_rrt(C: ry.Config, visual: bool, distance: float) -> ry._robotic.S
     
     return ret
 
-def plan_path(q_pWorld, q_start, q_goal, table_height, scenario, box_size, hold_size: list):
-    ry.params_add({'rrt/stepsize': .05})
+
+def initialize_config(q_pWorld, q_start, q_goal):
+    """Initializes the configuration and puzzle world."""
     C = ry.Config()
     puzzle_world = pWorld.PuzzleWorld(C, None, q_pWorld, q_start, q_goal)
     puzzle_world.build()
+    return C
+
+
+def plan_path(q_pWorld, table_height, scenario, box_size, hold_size: list):
+    ry.params_add({'rrt/stepsize': .05})
     ret = solve_maze_rrt(C, True, 0.0) 
     if not ret.feasible:
         print("The RRT solver was unable to find a feasible path.")
         exit()
-    
     path = ret.x
+
     # move up path at half height of box (here: 0.03)
     for i, q in enumerate(path):
-        path[i] = [q[0], q[1], 0.015]
+        path[i] = [q[0], q[1], box_size[2]/2.0]
+    print(f'found path:{path}')
 
     # move puzzle world up to table position
     C.addFile(ry.raiPath(scenario))
@@ -75,7 +83,6 @@ def plan_path(q_pWorld, q_start, q_goal, table_height, scenario, box_size, hold_
     C.delFrame("moving_box")
     
     box_pos = C.getFrame("start").getRelativePosition()
-    # box_pos[2] = 0.015  # why 0.015? because the box or the table is 0.03 high??
     box_pos[2] = box_size[2]/2.0
     C.addFrame("box", "puzzle_world") \
         .setRelativePosition(box_pos) \
@@ -84,7 +91,7 @@ def plan_path(q_pWorld, q_start, q_goal, table_height, scenario, box_size, hold_
         .setJoint(ry.JT.rigid) \
         .setContact(1) \
         .setMass(1.)
-    if hold == True:
+    if hold_size != None:
         C.addFrame("hold", "box") \
             .setRelativePosition([0.0, 0.0, box_size[2]/2.0 + hold_size[2]/2.0]) \
             .setShape(ry.ST.ssBox, size=hold_size) \
@@ -97,6 +104,7 @@ def plan_path(q_pWorld, q_start, q_goal, table_height, scenario, box_size, hold_
             .setColor([1, 1, 1])
     C.view()
     return C, path
+
 
 def execute(C: ry.Config, path: list, grasp_height: float, withHold: bool, onRobot: bool):
     man = expManip.ManipulationModelling(C)
@@ -124,7 +132,7 @@ def execute(C: ry.Config, path: list, grasp_height: float, withHold: bool, onRob
                
         # execute path
         try:
-            robot.execute_path_blocking(C, path_solution, time_to_solve=10)
+            robot.execute_path_blocking(C, path_solution, time_to_solve=len(path_solution)*0.1)
         except:
             print("Path is not feasible!")
         
@@ -135,6 +143,7 @@ def execute(C: ry.Config, path: list, grasp_height: float, withHold: bool, onRob
         robot.bot.home(C)
 
     C.view(True)
+
 
 if __name__ == "__main__":
     
@@ -154,6 +163,7 @@ if __name__ == "__main__":
 
 
     # ----- START MAIN -----
-
-    C, path = plan_path(q_pWorld, q_start, q_goal, table_height, scenario, box_size, hold_size)
+    C = initialize_config(q_pWorld, q_start, q_goal)
+    C, path = plan_path(q_pWorld, table_height, scenario, box_size, hold_size)
     execute(C, path, grasp_height, hold, False)    # True if on real robot
+    
