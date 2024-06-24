@@ -7,7 +7,7 @@ import robotic as ry
 import numpy as np
 import utils.buildMaze as pWorld
 import utils.robot_execution as robex
-import utils.expanded_manipulation as expManip
+import utils.expanded_manipulation_smoothPath as expManip
 
 
 def solve_maze_rrt(C: ry.Config, visual: bool, distance: float) -> ry._robotic.SolverReturn:
