@@ -3,15 +3,27 @@
 Proof of concept for solving a puzzle in which the puzzle cannot be solved in one motion only.
 In this proof of concept, the object is first moved to a subgoal and then moved to the final goal subsequentially.
 
+
+----- PROBLEMS -----
+--> Guess: Probably a problem of the joints
+
+- The robot is not able to grasp the object properly
+- The motion of the object is linked to the gripper, but it behaves in a unlogical way 
+(e.g. object is colliding with the table and the gripper, object is moving even though it has not been grasped by the robot)
+
+
 ----- DEBUGGING IMPLEMENTATION -----
 Changes made to the original implementation:
 1. the moving object is no more a child of the puzzle_world frame in the execution part (robot grasping + moving the object) 
   --> object "box" is used for finding the path with RRT
   --> object "moving_box" is used for executing the path on the robot
 
-2. hard coded paths, so that RRT does not have to be used each time for testing
+2. Using top_grasp instead of grasp_atGivenHeight in the execution part
 
-3. moving object without hold is tested
+3. hard coded paths, so that RRT does not have to be used each time for testing
+
+4. testing on moving object without hold
+
 """
 
 import sys
