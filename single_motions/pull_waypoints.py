@@ -1,11 +1,10 @@
 import sys, os
-sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 import robotic as ry
 import manipulation as manip
 import time
 import numpy as np
-import utils.robot_execution as robex
 
 C = ry.Config()
 # C.addFile(ry.raiPath('../rai-robotModels/scenarios/pandaSingle.g'))
