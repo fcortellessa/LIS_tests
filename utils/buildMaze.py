@@ -191,6 +191,8 @@ class PuzzleWorld:
 
 
 # -------- Usage --------
+"""Quick test to see if the puzzle world is built correctly."""
+
 
 # # 1. build the puzzle world by itsself at the given position q_pWorld
 # C = ry.Config()
