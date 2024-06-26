@@ -1,16 +1,13 @@
 """
-Proof of concept for solving a puzzle in which obstacles have to be moved in order to reach the goal.
-In future work, an algorithm will find first first find a path to the goal and then plan the manipulation of the obstacles.
-In this proof of concept, the obstacles are moved in a predefined way subsequentially.
+Proof of concept for solving a puzzle in which the puzzle cannot be solved in one motion only.
+In this proof of concept, the object is first moved to a subgoal and then movedto the final goal subsequentially.
 """
 
 import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-import time
 import robotic as ry
-import numpy as np
 import utils.buildMaze as pWorld
 import utils.robot_execution as robex
 import utils.expanded_manipulation as expManip
@@ -76,10 +73,6 @@ def solve_maze_rrt(C: ry.Config, moving_object: str, start_pos: list, goal_pos: 
         moving_obj_size = C.getFrame(moving_object).getSize()
         for i, q in enumerate(path):
             path[i] = [q[0]+q_pWorld[0], q[1]+q_pWorld[1], moving_obj_size[2]/2.0]
-            # C.addFrame(f"marker_{moving_object}_{i}", "puzzle_world") \
-            #     .setShape(ry.ST.marker, size=[.04]) \
-            #     .setRelativePosition([q[0], q[1], 0.0]) \
-            #     .setColor([1, 1, 1])
     print(f'found path:{path}')
     return path
 
@@ -157,8 +150,7 @@ if __name__ == "__main__":
     q_pWorld=[-0.3, 0.3, 0.0]
     q_start=[0.12, .12, 0.0]
     q_subgoal = [0.06, -0.1, 0.0]
-    # q_goal=[-0.16, .16, 0.0]
-    q_goal = [0.12, .12, 0.0]
+    q_goal=[-0.16, .16, 0.0]
     
     scenario, table_height = 'scenarios/pandasTable.g', 0.6
     # scenario, table_height = 'scenarios/pandaSingle.g', 0.65
